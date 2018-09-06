@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Star Lord</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.22/fabric.min.js"></script>
+</head>
+
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <div id="controls" style="width: 300px; float: left; ">
+        <button onclick="move('up')" style="width: 100%">Up</button>
+        <button onclick="move('left')" style="width: 47%;">Left</button>
+        <button onclick="move('right')" style="width: 47%">Right</button>
+        <button onclick="move('down')" style="width: 100%">Down</button>
+    </div>
+    <button onclick="playPause()" style="margin-left: 10px; margin-top: 80px">Play / Pause</button>
+
+    <script>
+        var play = true;
+
+        var playPause = function () {
+            if (play) {
+                play = false;
+                audio.pause();
+                return;
+            }
+            audio.play();
+            play = true;
+        }
+
+        var canvas = new fabric.Canvas('canvas', {
+            selection: false
+        });
+
+        var randomNumber = function (start, end) {
+            return Math.floor(Math.random() * end) + start;
+        }
+
+        var canvasProps = {
+            width: window.innerWidth,
+            height: window.innerHeight * (0.6),
+            amountOfStars: 50
+        };
+
+        const starProps = {
+            radius: 0.1,
+            color: 'white',
+            altColor: 'grey',
+            speed: {
+                min: 1,
+                max: 9
+            }
+        };
+
+        var produceStar = function () {
+            //the closer the star, in distance, the faster it moves
+            let speedSize = (randomNumber(starProps.speed.min, starProps.speed.max) / 10);
+            return new fabric.Circle({
+                type: "star",
+                left: randomNumber(0, canvasProps.width),
+                top: randomNumber(0, canvasProps.height),
+                fill: starProps.color,
+                speed: speedSize,
+                radius: starProps.radius + (speedSize * 6)
+            });
+        };
+
+        //up, down, left, right
+        var moving = "right";
+        var move = function (direction) {
+            moving = direction;
+        }
+
+        var animate = function () {
+            canvas.getObjects().concat().forEach(function (obj) {
+                if (play) {
+                    if (obj.type === "star") {
+                        //move the star
+                        obj.left -= obj.speed;
+
+                        //change star color
+                        if (obj.fill === starProps.color) {
+                            obj.set({
+                                "fill": starProps.altColor
+                            });
+                        } else {
+                            obj.set({
+                                "fill": starProps.color
+                            });
+                        }
+
+                        //wrap the stars
+                        if ((obj.left + (obj.radius * 2)) < 0) {
+                            obj.left = canvasProps.width;
+                        }
+                    } else {
+                        if (obj.type === "burst") {
+                            if (obj.visible) {
+                                obj.set({
+                                    "visible": false
+                                });
+                            } else {
+                                obj.set({
+                                    "visible": true
+                                });
+                            }
+                        }
+
+                        switch (moving) {
+                            case "left":
+                                obj.left -= 2;
+                                break;
+                            case "right":
+                                obj.left += 2;
+                                break;
+                            case "up":
+                                obj.top -= 2;
+                                break;
+                            case "down":
+                                obj.top += 2;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            });
+
+            canvas.renderAll();
+            fabric.util.requestAnimFrame(animate);
+        };
+
+        var setJetGo = function (imgAddr, isBurst) {
+            fabric.Image.fromURL(imgAddr, function (img) {
+                if (isBurst) {
+                    img.set({
+                        "top": ((canvas.height / 2) + 16)
+                    });
+                    img.set({
+                        "left": 56
+                    });
+                    img.type = "burst";
+                } else {
+                    img.set({
+                        "top": canvas.height / 2
+                    });
+                    img.set({
+                        "left": 100
+                    });
+                }
+
+                canvas.add(img);
+            });
+        }
+
+
+        var initScene = function () {
+            canvas.setWidth(window.innerWidth - 20);
+            canvas.setHeight(window.innerHeight * 0.7);
+
+            //add stars
+            for (let i = 0; i < canvasProps.amountOfStars; i++) {
+                canvas.add(produceStar());
+            }
+
+            //add jet images
+            setJetGo('jet.png');
+            setJetGo('burst.png', true);
+
+            animate();
+        };
+
+        initScene();
+
+        //music... yayyyyy!!!
+        var audio = new Audio('https://opengameart.org/sites/default/files/audio_preview/climax.mp3.ogg');
+        audio.play();
+    </script>
+
+    <style>
+        #canvas {
+            border-style: solid;
+            border-width: medium;
+            background-color: black;
+        }
+
+        #controls {
+            /* margin: 10px; */
+            margin-top: 10px;
+            font-size: 30pt;
+        }
+
+        button {
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin: 4px 2px;
+            cursor: pointer;
+            -webkit-transition-duration: 0.4s;
+            /* Safari */
+            transition-duration: 0.4s;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            background-color: #008CBA;
+            border-radius: 12px;
+        }
+    </style>
+</body>
+
+</html>
