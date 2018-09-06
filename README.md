@@ -18,6 +18,7 @@ In this scene, stars glow and move backwards to give a space-travel effect.
 Play around with it on [CodePen](https://codepen.io/naseeri/pen/RYLJVZ)
 
 ![App](NFCSC.png)
+![App](NFCSC.gif)
 
 Credits:
 
