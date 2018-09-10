@@ -1,7 +1,7 @@
 # Not Fancy Canvas Space Scene
 
 A simple, not fancy at all, Space travel scene using HTML5 canvas.
-For the **#notfancyappchallenge** - made, wayyy, under 24 hours.
+For the [**#notfancyappchallenge**](https://github.com/samanthaming/awesome-notfancyappchallenge) - made, wayyy, under 24 hours.
 In this scene, stars glow and move backwards to give a space-travel effect.
 
 ### Features include:
